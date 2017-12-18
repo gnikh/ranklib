@@ -24,9 +24,22 @@ public class RankerTrainer {
 	protected RankerFactory rf = new RankerFactory();
 	protected double trainingTime = 0;
 	
+	private String breakpointModelFile = null;
+	
+	public RankerTrainer(String breakpointModelFile) {
+		if (breakpointModelFile != null && breakpointModelFile.trim().length() > 0) {
+			this.breakpointModelFile = breakpointModelFile;
+		}
+	}
+	
 	public Ranker train(RANKER_TYPE type, List<RankList> train, int[] features, MetricScorer scorer)
 	{
-		Ranker ranker = rf.createRanker(type, train, features, scorer);
+		Ranker ranker = null;
+		if (this.breakpointModelFile != null) {
+			 ranker = rf.createRanker(type, train, features, scorer, this.breakpointModelFile);
+		} else {
+			ranker = rf.createRanker(type, train, features, scorer);
+		}
 		long start = System.nanoTime();
 		ranker.init();
 		ranker.learn();
@@ -36,7 +49,12 @@ public class RankerTrainer {
 	}
 	public Ranker train(RANKER_TYPE type, List<RankList> train, List<RankList> validation, int[] features, MetricScorer scorer)
 	{
-		Ranker ranker = rf.createRanker(type, train, features, scorer);
+		Ranker ranker = null;
+		if (this.breakpointModelFile != null) {
+			 ranker = rf.createRanker(type, train, features, scorer, this.breakpointModelFile);
+		} else {
+			ranker = rf.createRanker(type, train, features, scorer);
+		}
 		ranker.setValidationSet(validation);
 		long start = System.nanoTime();
 		ranker.init();

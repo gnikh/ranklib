@@ -285,7 +285,10 @@ public class Evaluator {
 			else if (args[i].equalsIgnoreCase ("-rank"))
 				rankFile = args[++i];
 			else if (args[i].equalsIgnoreCase ("-score"))
-				scoreFile = args[++i];			
+				scoreFile = args[++i];
+			else if (args[i].equalsIgnoreCase ("-breakpoint")) {
+				Evaluator.breakpointModelFile = args[++i];
+			}
 
 			//Ranker-specific parameters
 			//RankNet
@@ -469,6 +472,9 @@ public class Evaluator {
 				System.out.println("Model file: " + modelFile);
 			//System.out.println("#threads:\t" + nThread);
 			
+			if(breakpointModelFile.compareTo("")!=0)
+				System.out.println("Breakpoint Model file:\t" + Evaluator.breakpointModelFile);
+			
 			System.out.println("");
 			System.out.println("[+] " + rType[rankerType] + "'s Parameters:");
 			RankerFactory rf = new RankerFactory();
@@ -573,6 +579,7 @@ public class Evaluator {
 	public static boolean normalize = false;
 	public static Normalizer nml = new SumNormalizor();
 	public static String modelFile = "";
+	public static String breakpointModelFile = "";
  	
  	public static String qrelFile = "";//measure such as NDCG and MAP requires "complete" judgment.
  	//The relevance labels attached to our samples might be only a subset of the entire relevance judgment set.
@@ -732,7 +739,7 @@ public class Evaluator {
 				normalize(test, features);
 		}		
 		
-		RankerTrainer trainer = new RankerTrainer();
+		RankerTrainer trainer = new RankerTrainer(Evaluator.breakpointModelFile);
 		Ranker ranker = trainer.train(type, train, validation, features, trainScorer);
 		
 		if(test != null)
@@ -771,7 +778,7 @@ public class Evaluator {
 				normalize(validation, features);
 		}
 
-		RankerTrainer trainer = new RankerTrainer();
+		RankerTrainer trainer = new RankerTrainer(Evaluator.breakpointModelFile);
 		Ranker ranker = trainer.train(type, trainingData, validation, features, trainScorer);
 		
 		double rankScore = evaluate(ranker, testData);
@@ -809,7 +816,7 @@ public class Evaluator {
 				normalize(test, features);
 		}
 		
-		RankerTrainer trainer = new RankerTrainer();
+		RankerTrainer trainer = new RankerTrainer(Evaluator.breakpointModelFile);
 		Ranker ranker = trainer.train(type, train, validation, features, trainScorer);
 		
 		if(test != null)
@@ -894,7 +901,7 @@ public class Evaluator {
 				vali = validationData.get(i);
 			List<RankList> test = testData.get(i);
 			
-			RankerTrainer trainer = new RankerTrainer();
+			RankerTrainer trainer = new RankerTrainer(Evaluator.breakpointModelFile);
 			ranker = trainer.train(type, train, vali, features, trainScorer);
 			
 			double s2 = evaluate(ranker, test);

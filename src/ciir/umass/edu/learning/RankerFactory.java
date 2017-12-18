@@ -61,6 +61,16 @@ public class RankerFactory {
 		r.setMetricScorer(scorer);
 		return r;
 	}
+	
+	public Ranker createRanker(RANKER_TYPE type, List<RankList> samples, int[] features, MetricScorer scorer, String breakpointModelFile)
+	{
+		Ranker r = loadRankerFromFile(breakpointModelFile);
+		r.setTrainingSet(samples);
+		r.setFeatures(features);
+		r.setMetricScorer(scorer);
+		return r;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Ranker createRanker(String className)
 	{
